@@ -51,8 +51,8 @@ The purpose of this project is to: <br/>
 * minimize_scalar finds the minimum by default. Since we want to maximize profit, we define an inner function that takes quantity as input and return the negative of the profit. This inner functions calls the newsvendor_simulation(…) to get the average profit for that quantity and returns the negative of the profit.
 * We’ll call minimize_scalar with the function to minimize and bounds of our search
 * We extract the result of the main function:
-- optimal_quantity = int(result.x) : The oprimal quantity is store in result.x. We convert it to an integer
-- max_profit=-result.fun: The minimum value of the function(which is the negative of the maximum profit) is store in result.fun. We invert it to get the actual maximum profit.<br/>
+- ```optimal_quantity = int(result.x)``` : The oprimal quantity is store in result.x. We convert it to an integer
+- ```max_profit=-result.fun```: The minimum value of the function(which is the negative of the maximum profit) is store in result.fun. We invert it to get the actual maximum profit.<br/>
    
 ## 7.	Optimization Details
 •	The optimization uses ```scipy.optimize.minimize_scalar``` with the ‘bounded’ method<br/>
