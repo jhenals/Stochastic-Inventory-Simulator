@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+from stochasticInventorySimulator.find_optimal import find_optimal
 from stochasticInventorySimulator.find_optimal_opt import find_optimal_opt
 from stochasticInventorySimulator.newsvendor_simulation import newsvendor_simulation
 
@@ -46,7 +47,14 @@ def run_simulation():
     else:
         start_quantity = int(start_quantity_entry.get())
         end_quantity = int(end_quantity_entry.get())
-        optimal_quantity, max_profit = find_optimal_opt(mean, stddev, selling_price,cost_per_unit, salvage_value,start_quantity, end_quantity)
+        optimal_quantity=0
+        max_profit=0
+
+        if trial_entry.get()>="10000":
+            optimal_quantity, max_profit = find_optimal_opt(mean, stddev, selling_price,cost_per_unit, salvage_value,start_quantity, end_quantity)
+        else:
+            find_optimal(mean, stddev, selling_price, cost_per_unit, salvage_value, start_quantity, end_quantity)
+
         result_label.config(text=f"Optimal Quantity: {optimal_quantity}, Max Profit: ${max_profit:.2f}")
 
 
@@ -62,8 +70,6 @@ def show_optimize_widgets():
     stddev_entry.grid_forget()
     quantity_label.grid_forget()
     quantity_entry.grid_forget()
-    trial_label.grid_forget()
-    trial_entry.grid_forget()
     optimize_button.grid_forget()
 
     # Show 2nd grid
@@ -83,6 +89,9 @@ def show_optimize_widgets():
     cost_per_unit_entry.grid(row=5, column=1)
     salvage_value_label.grid(row=6, column=0)
     salvage_value_entry.grid(row=6, column=1)
+
+    trial_label.grid(row=7, column=0)
+    trial_entry.grid(row=7, column=1)
 
     simulate_button.grid(row=9, column=0, columnspan=2)
 
