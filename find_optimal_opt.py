@@ -3,10 +3,10 @@ from scipy.optimize import minimize_scalar
 from newsvendor_simulation import newsvendor_simulation
 
 
-def find_optimal_opt(mean, stddev, start_quantity, end_quantity, num_trials=10000):
+def find_optimal_opt(mean, stddev, selling_price, cost_per_unit, salvage_value, start_quantity, end_quantity, num_trials=10000):
 
     def profit_to_minimize(quantity):
-        profit=newsvendor_simulation(mean, stddev, quantity, num_trials)
+        profit=newsvendor_simulation(mean, stddev, quantity, selling_price, cost_per_unit, salvage_value, num_trials)
         return -profit
 
     result=minimize_scalar(profit_to_minimize, bounds=(start_quantity,end_quantity), method='bounded')
