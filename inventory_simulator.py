@@ -1,60 +1,170 @@
 import tkinter as tk
 from tkinter import ttk
 
-from find_optimal_opt import find_optimal_opt
-from newsvendor_simulation import newsvendor_simulation
+from stochasticInventorySimulator.find_optimal_opt import find_optimal_opt
+from stochasticInventorySimulator.newsvendor_simulation import newsvendor_simulation
 
+optimize=False
+
+def reset():
+    quantity_entry.insert(0, "")
+    start_quantity_entry.delete(0,tk.END)
+    start_quantity_entry.insert(0, "800")
+    end_quantity_entry.delete(0,tk.END)
+    end_quantity_entry.insert(0, "1200")
+    trial_entry.delete(0,tk.END)
+    trial_entry.insert(0, "1000")
+
+    result_label.config(text=f"")
+
+    if optimize:
+        start_quantity_entry.insert(0, "")
+        end_quantity_entry.insert(0, "")
+        result_label.config(text=f"")
 
 def run_simulation():
+    global optimize
+
     mean= int(mean_entry.get())
     stddev= int(stddev_entry.get())
     quantity = int (quantity_entry.get()) if quantity_entry.get() else None
 
-    if quantity:
+    if not optimize and quantity:
         profit= newsvendor_simulation(mean, stddev, quantity)
         result_label.config(text=f"Average Profit: ${profit:.2f}")
+        quantity_entry.insert(0,"")
 
+    elif not optimize and not quantity:
+        result_label.config(text=f"Please insert production quantity.")
     else:
-        #Optimization
-        start_quantity=800
-        end_quantity=1200
-
-        step_size=25
-        #optimal_quantity, max_profit = find_optimal(mean, stddev, start_quantity, end_quantity, step_size)
+        start_quantity = int(start_quantity_entry.get())
+        end_quantity = int(end_quantity_entry.get())
         optimal_quantity, max_profit = find_optimal_opt(mean, stddev, start_quantity, end_quantity)
         result_label.config(text=f"Optimal Quantity: {optimal_quantity}, Max Profit: ${max_profit:.2f}")
+        start_quantity_entry.insert(0,"")
+        end_quantity_entry.insert(0,"")
 
-root=tk.Tk()
-root.title("Stochastic Inventory Simulation")
 
-mean_label= ttk.Label(root, text="Mean Demand:")
-mean_label.grid(row=0, column=0)
-mean_entry = ttk.Entry(root)
-mean_entry.grid(row=0, column=1)
+def show_optimize_widgets():
+    global optimize
+    optimize = True
+
+    # Hide 1st grid
+    mean_label.grid_forget()
+    mean_entry.grid_forget()
+    stddev_label.grid_forget()
+    stddev_entry.grid_forget()
+    quantity_label.grid_forget()
+    quantity_entry.grid_forget()
+    trial_label.grid_forget()
+    trial_entry.grid_forget()
+    optimize_button.grid_forget()
+
+    # Show 2nd grid
+    start_quantity_label.grid(row=1, column=0)
+    start_quantity_entry.grid(row=1, column=1)
+    start_quantity_entry.delete(0,tk.END)
+    start_quantity_entry.insert(0, "800")  # Default value
+
+    end_quantity_label.grid(row=2, column=0)
+    end_quantity_entry.grid(row=2, column=1)
+    end_quantity_entry.delete(0,tk.END)
+    end_quantity_entry.insert(0, "1200")  # Default value
+
+    simulate_button.grid(row=6, column=0, columnspan=2)
+
+    result_label.config(text=f"")
+    reset()
+
+def show_simulation_widgets():
+    global optimize
+    optimize = False
+    start_quantity_label.grid_forget()
+    start_quantity_entry.grid_forget()
+    end_quantity_label.grid_forget()
+    end_quantity_entry.grid_forget()
+    simulate_button.grid_forget()
+
+    mean_label.grid(row=1, column=0)
+    mean_entry.grid(row=1, column=1)
+    stddev_label.grid(row=2, column=0)
+    stddev_entry.grid(row=2, column=1)
+    quantity_label.grid(row=3, column=0)
+    quantity_entry.grid(row=3, column=1)
+    trial_label.grid(row=4, column=0)
+    trial_entry.grid(row=4, column=1)
+    optimize_button.grid(row=6, column=0, columnspan=2)
+
+    result_label.config(text=f"")
+    reset()
+
+
+#GUI
+window=tk.Tk()
+window.geometry("600x500")
+window.title("Stochastic Inventory Simulation")
+
+reset_button = ttk.Button(window, text="Reset", command=reset)
+reset_button.grid(row=0, column=0, columnspan=2)
+
+
+mean_label= ttk.Label(window, text="Mean Demand:")
+mean_entry = ttk.Entry(window)
+
+stddev_label= ttk.Label(window, text="Standard Deviation:")
+stddev_entry = ttk.Entry(window)
+
+quantity_label= ttk.Label(window, text="Production Quantity:")
+quantity_entry = ttk.Entry(window)
+
+trial_label= ttk.Label(window, text="Desired number of trials:")
+trial_entry = ttk.Entry(window)
+
+start_quantity_label = ttk.Label(window, text="Start Quantity:")
+start_quantity_entry = ttk.Entry(window)
+
+end_quantity_label = ttk.Label(window, text="End Quantity:")
+end_quantity_entry = ttk.Entry(window)
+
+
+result_label = ttk.Label(window, text="")
+result_label.grid(row=7, column=0)
+
+
+
+mean_label.grid(row=1, column=0)
+mean_entry.grid(row=1, column=1)
 mean_entry.insert(0,"1000") #Default value4
 
-stddev_label= ttk.Label(root, text="Standard Deviation:")
-stddev_label.grid(row=1, column=0)
-stddev_entry = ttk.Entry(root)
-stddev_entry.grid(row=1, column=1)
+stddev_label.grid(row=2, column=0)
+stddev_entry.grid(row=2, column=1)
 stddev_entry.insert(0,"200") #Default value4
 
-quantity_label= ttk.Label(root, text="Production Quantity:")
-quantity_label.grid(row=2, column=0)
-quantity_entry = ttk.Entry(root)
-quantity_entry.grid(row=2, column=1)
+quantity_label.grid(row=3, column=0)
+quantity_entry.grid(row=3, column=1)
 
-trial_label= ttk.Label(root, text="Desired number of trials:")
-trial_label.grid(row=3, column=0)
-trial_entry = ttk.Entry(root)
-trial_entry.grid(row=3, column=1)
+trial_label.grid(row=4, column=0)
+trial_entry.grid(row=4, column=1)
 trial_entry.insert(0,"1000")
 
-run_button = ttk.Button(root, text="Run Simulation", command=run_simulation)
-run_button.grid(row=4, column=0, columnspan=2)
+run_button = ttk.Button(window, text="Run Simulation", command=run_simulation)
+run_button.grid(row=5, column=0, columnspan=2)
 
-result_label = ttk.Label(root, text="")
-result_label.grid(row=5, column=0)
+optimize_button = ttk.Button(window, text="Optimize", command=show_optimize_widgets)
+optimize_button.grid(row=6, column=0, columnspan=2)
 
-root.mainloop()
+simulate_button = ttk.Button(window, text="Simulate", command=show_simulation_widgets)
+simulate_button.grid_forget()
+
+#Second Grid
+start_quantity_label.grid_forget()
+start_quantity_entry .grid_forget()
+
+end_quantity_label.grid_forget()
+end_quantity_entry.grid_forget()
+
+#Result
+
+
+window.mainloop()
 
